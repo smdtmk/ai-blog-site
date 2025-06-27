@@ -52,7 +52,21 @@ body {
 .editor-section, .preview-section, .articles-list {
     background: white;
     border-radius: 12px;
-    padding: 2rem;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.upload-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.images-gallery {
+    background: white;
+    border-radius: 12px;
+    padding: 2.5rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
@@ -218,20 +232,19 @@ button[type="submit"]:hover {
 }
 
 .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     margin-top: 0.5rem;
 }
 
 .checkbox-group input[type="checkbox"] {
     width: auto;
-    margin: 0;
+    margin-right: 0.5rem;
+    vertical-align: middle;
 }
 
 .checkbox-group span {
     cursor: pointer;
     user-select: none;
+    vertical-align: middle;
 }
 
 .filter-controls {
@@ -478,14 +491,14 @@ button[type="submit"]:hover {
 
 #article-tab {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 0.8fr;
     gap: 2rem;
     align-items: start;
 }
 
 #image-tab {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 0.8fr;
     gap: 2rem;
     align-items: start;
 }
