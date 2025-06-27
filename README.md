@@ -50,15 +50,19 @@ date: "2024-12-15"
 
 #### 画像のアップロード
 
-専用スクリプトを使用して画像をS3にアップロードします：
-
+**方法1: コマンドラインスクリプト**
 ```bash
-# 画像をアップロード
-./scripts/upload-image.sh ~/Desktop/sample.png
+# 画像をアップロード（自動最適化付き）
+./scripts/upload-image.sh chatgpt-guide ~/Desktop/workflow.png
 
 # アップロード後、URLが表示されます
-# https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png
+# https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/workflow.png
 ```
+
+**方法2: 管理画面**
+- `admin-image.html` でブラウザからアップロード
+- ドラッグ&ドロップ対応
+- 自動リサイズ・最適化
 
 #### アイキャッチ画像の設定
 
@@ -66,19 +70,26 @@ date: "2024-12-15"
 ```markdown
 ---
 title: "記事タイトル"
-image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png"
+image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png"
 ---
 ```
 
 #### 記事内での画像使用
 
 ```markdown
-![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png)
+![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png)
 
 <!-- キャプション付き -->
-![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png)
+![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png)
 *画像の説明文*
 ```
+
+#### 画像最適化機能
+
+- **自動リサイズ**: 1200x800px以下に自動調整
+- **品質最適化**: JPEG品質85%で圧縮
+- **メタデータ削除**: EXIF情報を自動削除
+- **ファイルサイズ減**: 平均60-80%のサイズ減
 
 #### 手動アップロード
 
@@ -134,14 +145,30 @@ git push origin main
 ## ディレクトリ構造
 
 ```
-├── articles/           # 記事ファイル（Markdown）
-├── images/             # 画像ファイル
-│   └── articles/       # 記事用画像
-├── css/               # スタイルシート
-├── js/                # JavaScript
-├── index.html         # トップページ
-├── contact.html       # お問い合わせページ
-└── README.md          # このファイル
+├── articles/                    # 記事フォルダ
+│   ├── chatgpt-guide/           # 記事ごとのフォルダ
+│   │   └── index.md         # 記事ファイル
+│   ├── machine-learning-intro/
+│   │   └── index.md
+│   └── aws-amplify-serverless/
+│       └── index.md
+├── scripts/                 # ユーティリティスクリプト
+│   └── upload-image.sh      # 画像アップロード
+├── css/                     # スタイルシート
+├── js/                      # JavaScript
+├── index.html               # トップページ
+├── contact.html             # お問い合わせ
+├── admin-image.html         # 画像管理画面
+└── README.md                # このファイル
+
+# S3構造
+ai-blog-images-992382791277/
+└── articles/
+    ├── chatgpt-guide/
+    │   └── workflow.svg
+    ├── machine-learning-intro/
+    │   └── algorithm.svg
+    └── aws-amplify-serverless/
 ```
 
 ## 管理画面について

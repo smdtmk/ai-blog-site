@@ -5,12 +5,12 @@ type: "tech"
 topics: ["AI", "ChatGPT", "業務効率化"]
 published: true
 date: "2024-12-15"
-image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-workflow.svg"
+image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/workflow.svg"
 ---
 
 # ChatGPTの活用方法
 
-![ChatGPTワークフロー](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-workflow.svg)
+![ChatGPTワークフロー](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/workflow.svg)
 
 ChatGPTを使って日常業務を効率化する具体的な方法を紹介します。
 

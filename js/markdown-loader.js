@@ -7,16 +7,16 @@ class MarkdownLoader {
 
     // 記事一覧を読み込み
     async loadArticles() {
-        // 記事ファイル一覧（実際の実装では動的に取得）
-        const articleFiles = [
-            'chatgpt-guide.md',
-            'machine-learning-intro.md',
-            'aws-amplify-serverless.md'
+        // 記事フォルダ一覧（実際の実装では動的に取得）
+        const articleFolders = [
+            'chatgpt-guide',
+            'machine-learning-intro',
+            'aws-amplify-serverless'
         ];
 
         try {
-            for (const file of articleFiles) {
-                const article = await this.loadArticle(file);
+            for (const folder of articleFolders) {
+                const article = await this.loadArticle(folder);
                 if (article && article.frontmatter.published) {
                     this.articles.push(article);
                 }
@@ -34,15 +34,15 @@ class MarkdownLoader {
     }
 
     // 個別記事を読み込み
-    async loadArticle(filename) {
+    async loadArticle(foldername) {
         try {
-            const response = await fetch(`articles/${filename}`);
+            const response = await fetch(`articles/${foldername}/index.md`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             const content = await response.text();
-            return this.parseMarkdown(content, filename);
+            return this.parseMarkdown(content, foldername);
         } catch (error) {
-            console.error(`記事 ${filename} の読み込みに失敗:`, error);
+            console.error(`記事 ${foldername} の読み込みに失敗:`, error);
             return null;
         }
     }
@@ -67,7 +67,7 @@ class MarkdownLoader {
         const excerpt = this.generateExcerpt(markdownContent);
 
         return {
-            filename: filename.replace('.md', ''),
+            filename: filename,
             frontmatter,
             content: markdownContent,
             excerpt,
