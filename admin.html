@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理画面 - AI Blog Site</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>AI Blog Site 管理画面</h1>
+            <a href="index.html" class="back-link">サイトに戻る</a>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-tab="article">記事管理</button>
+            <button class="nav-btn" data-tab="image">画像管理</button>
+        </nav>
+
+        <main class="admin-main">
+            <!-- 記事管理タブ -->
+            <div id="article-tab" class="tab-content active">
+                <div class="editor-section">
+                    <h2>記事作成・編集</h2>
+                    <form id="articleForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="title">タイトル *</label>
+                                <input type="text" id="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="emoji">絵文字</label>
+                                <input type="text" id="emoji" placeholder="🤖" maxlength="2">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="excerpt">概要 *</label>
+                            <textarea id="excerpt" rows="2" required placeholder="記事の概要を入力してください"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="topics">トピック（カンマ区切り）</label>
+                                <input type="text" id="topics" placeholder="AI, ChatGPT, 機械学習">
+                            </div>
+                            <div class="form-group">
+                                <label for="date">公開日</label>
+                                <input type="date" id="date" value="">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">アイキャッチ画像URL</label>
+                            <div class="image-input-group">
+                                <input type="url" id="imageUrl" placeholder="https://...">
+                                <button type="button" id="selectImageBtn">画像を選択</button>
+                            </div>
+                            <div id="imagePreview" class="image-preview"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content">記事内容（Markdown） *</label>
+                            <textarea id="content" rows="20" required placeholder="# 記事タイトル
+
+記事の内容をMarkdownで記述してください。
+
+## 見出し2
+
+- リスト項目1
+- リスト項目2
+
+**太字** *斜体*"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="isPublished" checked>
+                                    公開する
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="previewBtn">プレビュー</button>
+                            <button type="submit">記事を保存</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="preview-section">
+                    <h2>プレビュー</h2>
+                    <div id="preview" class="preview-content">
+                        プレビューがここに表示されます
+                    </div>
+                </div>
+
+                <div class="articles-list">
+                    <h2>記事一覧</h2>
+                    <div id="articlesList"></div>
+                </div>
+            </div>
+
+            <!-- 画像管理タブ -->
+            <div id="image-tab" class="tab-content">
+                <div class="upload-section">
+                    <h2>画像アップロード</h2>
+                    <form id="imageUploadForm">
+                        <div class="form-group">
+                            <label for="articleSelect">記事フォルダ</label>
+                            <select id="articleSelect" required>
+                                <option value="">記事を選択してください</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageFile">画像ファイル</label>
+                            <div class="file-drop-zone" id="fileDropZone">
+                                <input type="file" id="imageFile" accept="image/*" multiple>
+                                <div class="drop-message">
+                                    <p>ファイルをドラッグ&ドロップ または クリックして選択</p>
+                                    <small>PNG, JPG, SVG, WebP対応</small>
+                                </div>
+                            </div>
+                            <div id="uploadPreview" class="upload-preview"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="optimizeImage" checked>
+                                画像を最適化する（推奨）
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="uploadBtn">アップロード</button>
+                        </div>
+                    </form>
+
+                    <div id="uploadResult" class="upload-result" style="display: none;"></div>
+                </div>
+
+                <div class="images-gallery">
+                    <h2>アップロード済み画像</h2>
+                    <div class="gallery-filter">
+                        <select id="galleryFilter">
+                            <option value="all">すべての記事</option>
+                        </select>
+                    </div>
+                    <div id="imagesGallery"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 画像選択モーダル -->
+        <div id="imageSelectModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>画像を選択</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalImageGallery"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/admin-unified.js"></script>
+</body>
+</html>
