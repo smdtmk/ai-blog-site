@@ -44,8 +44,43 @@ date: "2024-12-15"
 | `topics` | | 記事のトピック（配列形式） |
 | `published` | ✅ | 公開状態（true/false） |
 | `date` | ✅ | 公開日（YYYY-MM-DD形式） |
+| `image` | | アイキャッチ画像のパス |
 
-### 4. Markdownの書き方
+### 4. 画像の管理
+
+#### 画像ファイルの配置
+
+`images/articles/` ディレクトリに画像ファイルを配置します。
+
+```
+images/
+└── articles/
+    ├── chatgpt-workflow.svg
+    ├── ml-algorithm.png
+    └── aws-architecture.jpg
+```
+
+#### アイキャッチ画像の設定
+
+フロントマターで指定：
+```markdown
+---
+title: "記事タイトル"
+image: "/images/articles/sample-image.png"
+---
+```
+
+#### 記事内での画像使用
+
+```markdown
+![Altテキスト](/images/articles/sample-image.png)
+
+<!-- キャプション付き -->
+![Altテキスト](/images/articles/sample-image.png)
+*画像の説明文*
+```
+
+### 5. Markdownの書き方
 
 #### 見出し
 ```markdown
@@ -93,6 +128,8 @@ git push origin main
 
 ```
 ├── articles/           # 記事ファイル（Markdown）
+├── images/             # 画像ファイル
+│   └── articles/       # 記事用画像
 ├── css/               # スタイルシート
 ├── js/                # JavaScript
 ├── index.html         # トップページ

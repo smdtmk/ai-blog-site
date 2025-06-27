@@ -120,7 +120,10 @@ class MarkdownLoader {
         const html = this.articles.slice(0, 6).map(article => `
             <article class="article-card">
                 <div class="article-image">
-                    <span class="article-emoji">${article.frontmatter.emoji || '📝'}</span>
+                    ${article.frontmatter.image ? 
+                        `<img src="${article.frontmatter.image}" alt="${article.frontmatter.title}">` : 
+                        `<span class="article-emoji">${article.frontmatter.emoji || '📝'}</span>`
+                    }
                 </div>
                 <div class="article-content">
                     <h2 class="article-title">${article.frontmatter.title}</h2>

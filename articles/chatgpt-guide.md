@@ -5,9 +5,12 @@ type: "tech"
 topics: ["AI", "ChatGPT", "業務効率化"]
 published: true
 date: "2024-12-15"
+image: "/images/articles/chatgpt-workflow.svg"
 ---
 
 # ChatGPTの活用方法
+
+![ChatGPTワークフロー](/images/articles/chatgpt-workflow.svg)
 
 ChatGPTを使って日常業務を効率化する具体的な方法を紹介します。
 
