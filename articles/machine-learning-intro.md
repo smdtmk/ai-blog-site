@@ -5,12 +5,12 @@ type: "tech"
 topics: ["機械学習", "Python", "データサイエンス"]
 published: true
 date: "2024-12-12"
-image: "/images/articles/ml-algorithm.svg"
+image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/ml-algorithm.svg"
 ---
 
 # 機械学習入門
 
-![Machine Learningアルゴリズム](/images/articles/ml-algorithm.svg)
+![Machine Learningアルゴリズム](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/ml-algorithm.svg)
 
 機械学習の基本概念から実装まで、初心者向けに分かりやすく解説します。
 

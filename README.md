@@ -46,38 +46,45 @@ date: "2024-12-15"
 | `date` | ✅ | 公開日（YYYY-MM-DD形式） |
 | `image` | | アイキャッチ画像のパス |
 
-### 4. 画像の管理
+### 4. 画像の管理（S3）
 
-#### 画像ファイルの配置
+#### 画像のアップロード
 
-`images/articles/` ディレクトリに画像ファイルを配置します。
+専用スクリプトを使用して画像をS3にアップロードします：
 
-```
-images/
-└── articles/
-    ├── chatgpt-workflow.svg
-    ├── ml-algorithm.png
-    └── aws-architecture.jpg
+```bash
+# 画像をアップロード
+./scripts/upload-image.sh ~/Desktop/sample.png
+
+# アップロード後、URLが表示されます
+# https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png
 ```
 
 #### アイキャッチ画像の設定
 
-フロントマターで指定：
+フロントマターでS3 URLを指定：
 ```markdown
 ---
 title: "記事タイトル"
-image: "/images/articles/sample-image.png"
+image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png"
 ---
 ```
 
 #### 記事内での画像使用
 
 ```markdown
-![Altテキスト](/images/articles/sample-image.png)
+![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png)
 
 <!-- キャプション付き -->
-![Altテキスト](/images/articles/sample-image.png)
+![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/sample.png)
 *画像の説明文*
+```
+
+#### 手動アップロード
+
+```bash
+# AWS CLIで直接アップロード
+aws s3 cp image.png s3://ai-blog-images-992382791277/articles/
 ```
 
 ### 5. Markdownの書き方
