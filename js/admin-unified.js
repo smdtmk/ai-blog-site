@@ -87,8 +87,13 @@ class UnifiedAdmin {
         // タブコンテンツの切り替え
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
+            content.style.display = 'none';
         });
-        document.getElementById(`${tabName}-tab`).classList.add('active');
+        const activeTab = document.getElementById(`${tabName}-tab`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.style.display = 'block';
+        }
     }
 
     loadArticles() {
