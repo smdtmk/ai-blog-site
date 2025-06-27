@@ -52,9 +52,14 @@ class ArticleDisplay {
         const container = document.getElementById('articles');
         if (!container) return;
 
-        const html = articles.slice(0, 6).map(article => `
+        // 公開記事のみ表示
+        const publishedArticles = articles.filter(article => article.isPublished !== false);
+
+        const html = publishedArticles.slice(0, 6).map(article => `
             <article class="article-card">
-                <div class="article-image">画像プレースホルダー</div>
+                <div class="article-image">
+                    ${article.image ? `<img src="${article.image}" alt="${article.title}">` : '画像プレースホルダー'}
+                </div>
                 <div class="article-content">
                     <h2 class="article-title">${article.title}</h2>
                     <p class="article-excerpt">${article.excerpt}</p>
@@ -71,10 +76,13 @@ class ArticleDisplay {
 
     // サイドバーを更新
     updateSidebar(articles) {
+        // 公開記事のみ表示
+        const publishedArticles = articles.filter(article => article.isPublished !== false);
+        
         // 人気記事（最新3件）
         const popularList = document.querySelector('.widget ul');
-        if (popularList && articles.length > 0) {
-            const popularHtml = articles.slice(0, 4).map(article => 
+        if (popularList && publishedArticles.length > 0) {
+            const popularHtml = publishedArticles.slice(0, 4).map(article => 
                 `<li><a href="#" onclick="articleDisplay.showArticle(${article.id})">${article.title}</a></li>`
             ).join('');
             popularList.innerHTML = popularHtml;
@@ -83,7 +91,7 @@ class ArticleDisplay {
         // カテゴリ別記事数を更新
         const categoryList = document.querySelectorAll('.widget ul')[1];
         if (categoryList) {
-            const categories = this.getCategoryCounts(articles);
+            const categories = this.getCategoryCounts(publishedArticles);
             const categoryHtml = Object.entries(categories).map(([category, count]) => 
                 `<li><a href="#">${category} (${count})</a></li>`
             ).join('');

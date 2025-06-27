@@ -2,7 +2,9 @@
 class ArticleManager {
     constructor() {
         this.articles = this.loadArticles();
+        this.categories = this.loadCategories();
         this.initEventListeners();
+        this.loadCategories();
         this.displayArticles();
     }
 
@@ -10,6 +12,20 @@ class ArticleManager {
     loadArticles() {
         const stored = localStorage.getItem('blogArticles');
         return stored ? JSON.parse(stored) : [];
+    }
+    
+    // カテゴリを読み込み
+    loadCategories() {
+        const stored = localStorage.getItem('blogCategories');
+        const defaultCategories = ['AI技術', '機械学習', 'AWS', 'プログラミング'];
+        this.categories = stored ? JSON.parse(stored) : defaultCategories;
+        this.updateCategorySelects();
+        return this.categories;
+    }
+    
+    // カテゴリを保存
+    saveCategories() {
+        localStorage.setItem('blogCategories', JSON.stringify(this.categories));
     }
 
     // LocalStorageに記事を保存
@@ -27,10 +43,34 @@ class ArticleManager {
         document.getElementById('previewBtn').addEventListener('click', () => {
             this.showPreview();
         });
+        
+        document.getElementById('manageCategoriesBtn').addEventListener('click', () => {
+            this.showCategoryModal();
+        });
+        
+        document.getElementById('imageUpload').addEventListener('change', (e) => {
+            this.handleImageUpload(e);
+        });
+        
+        document.getElementById('statusFilter').addEventListener('change', () => {
+            this.displayArticles();
+        });
+        
+        document.getElementById('categoryFilter').addEventListener('change', () => {
+            this.displayArticles();
+        });
+        
+        document.getElementById('addCategoryBtn').addEventListener('click', () => {
+            this.addCategory();
+        });
+        
+        document.getElementById('closeCategoryModal').addEventListener('click', () => {
+            this.hideCategoryModal();
+        });
     }
 
     // 記事を保存
-    saveArticle() {
+    async saveArticle() {
         const title = document.getElementById('title').value;
         const excerpt = document.getElementById('excerpt').value;
         const category = document.getElementById('category').value;
@@ -41,6 +81,11 @@ class ArticleManager {
             return;
         }
 
+        const imageFile = document.getElementById('imageUpload').files[0];
+        const seoTitle = document.getElementById('seoTitle').value;
+        const seoDescription = document.getElementById('seoDescription').value;
+        const isPublished = document.getElementById('isPublished').checked;
+        
         const article = {
             id: Date.now(),
             title,
@@ -48,7 +93,11 @@ class ArticleManager {
             category,
             content,
             date: new Date().toLocaleDateString('ja-JP'),
-            slug: this.createSlug(title)
+            slug: this.createSlug(title),
+            image: imageFile ? await this.convertImageToBase64(imageFile) : null,
+            seoTitle: seoTitle || title,
+            seoDescription: seoDescription || excerpt,
+            isPublished
         };
 
         this.articles.unshift(article);
@@ -95,18 +144,39 @@ class ArticleManager {
     // 記事一覧を表示
     displayArticles() {
         const container = document.getElementById('articlesList');
+        const statusFilter = document.getElementById('statusFilter').value;
+        const categoryFilter = document.getElementById('categoryFilter').value;
         
-        if (this.articles.length === 0) {
-            container.innerHTML = '<p>まだ記事がありません。</p>';
+        let filteredArticles = this.articles;
+        
+        if (statusFilter !== 'all') {
+            filteredArticles = filteredArticles.filter(article => 
+                statusFilter === 'published' ? article.isPublished : !article.isPublished
+            );
+        }
+        
+        if (categoryFilter !== 'all') {
+            filteredArticles = filteredArticles.filter(article => 
+                article.category === categoryFilter
+            );
+        }
+        
+        if (filteredArticles.length === 0) {
+            container.innerHTML = '<p>該当する記事がありません。</p>';
             return;
         }
 
-        const html = this.articles.map(article => `
+        const html = filteredArticles.map(article => `
             <div class="article-item">
                 <div class="article-info">
                     <h3>${article.title}</h3>
                     <p>${article.excerpt}</p>
-                    <small>カテゴリ: ${article.category} | 日付: ${article.date}</small>
+                    <div>
+                        <span class="status-badge ${article.isPublished ? 'status-published' : 'status-draft'}">
+                            ${article.isPublished ? '公開中' : '下書き'}
+                        </span>
+                        <small>カテゴリ: ${article.category} | 日付: ${article.date}</small>
+                    </div>
                 </div>
                 <div class="article-actions">
                     <button class="edit-btn" onclick="articleManager.editArticle(${article.id})">編集</button>
@@ -181,6 +251,89 @@ class ArticleManager {
         console.log('メインサイトを更新中...');
     }
 
+    // カテゴリ選択ボックスを更新
+    updateCategorySelects() {
+        const categorySelect = document.getElementById('category');
+        const categoryFilter = document.getElementById('categoryFilter');
+        
+        // 記事作成用セレクト
+        categorySelect.innerHTML = '<option value="">選択してください</option>' +
+            this.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        
+        // フィルター用セレクト
+        if (categoryFilter) {
+            categoryFilter.innerHTML = '<option value="all">すべてのカテゴリ</option>' +
+                this.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+    }
+    
+    // カテゴリ管理モーダルを表示
+    showCategoryModal() {
+        document.getElementById('categoryModal').style.display = 'flex';
+        this.displayCategoriesList();
+    }
+    
+    // カテゴリ管理モーダルを非表示
+    hideCategoryModal() {
+        document.getElementById('categoryModal').style.display = 'none';
+    }
+    
+    // カテゴリ一覧を表示
+    displayCategoriesList() {
+        const container = document.getElementById('categoriesList');
+        const html = this.categories.map(category => `
+            <div class="category-item">
+                <span>${category}</span>
+                <button onclick="articleManager.deleteCategory('${category}')" class="delete-btn">削除</button>
+            </div>
+        `).join('');
+        container.innerHTML = html;
+    }
+    
+    // カテゴリを追加
+    addCategory() {
+        const name = document.getElementById('newCategoryName').value.trim();
+        if (name && !this.categories.includes(name)) {
+            this.categories.push(name);
+            this.saveCategories();
+            this.updateCategorySelects();
+            this.displayCategoriesList();
+            document.getElementById('newCategoryName').value = '';
+        }
+    }
+    
+    // カテゴリを削除
+    deleteCategory(name) {
+        if (confirm(`カテゴリ「${name}」を削除しますか？`)) {
+            this.categories = this.categories.filter(cat => cat !== name);
+            this.saveCategories();
+            this.updateCategorySelects();
+            this.displayCategoriesList();
+        }
+    }
+    
+    // 画像アップロード処理
+    handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('imagePreview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="プレビュー">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // 画像をBase64に変換
+    convertImageToBase64(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+    }
+    
     // 記事データをエクスポート（JSON形式）
     exportArticles() {
         const dataStr = JSON.stringify(this.articles, null, 2);
