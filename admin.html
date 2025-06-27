@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記事管理 - AI Blog Site</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>記事管理システム</h1>
+            <a href="index.html" class="back-link">サイトに戻る</a>
+        </header>
+
+        <main class="admin-main">
+            <div class="editor-section">
+                <h2>新規記事作成</h2>
+                <form id="articleForm">
+                    <div class="form-group">
+                        <label for="title">タイトル</label>
+                        <input type="text" id="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="excerpt">概要</label>
+                        <textarea id="excerpt" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">カテゴリ</label>
+                        <select id="category" required>
+                            <option value="">選択してください</option>
+                            <option value="AI技術">AI技術</option>
+                            <option value="機械学習">機械学習</option>
+                            <option value="AWS">AWS</option>
+                            <option value="プログラミング">プログラミング</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">記事内容（Markdown）</label>
+                        <textarea id="content" rows="15" placeholder="# 見出し1&#10;&#10;記事の内容をMarkdownで記述してください。&#10;&#10;## 見出し2&#10;&#10;- リスト項目1&#10;- リスト項目2&#10;&#10;**太字** *斜体*" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="previewBtn">プレビュー</button>
+                        <button type="submit">記事を保存</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <h2>プレビュー</h2>
+                <div id="preview" class="preview-content">
+                    プレビューがここに表示されます
+                </div>
+            </div>
+
+            <div class="articles-list">
+                <h2>既存記事一覧</h2>
+                <div id="articlesList"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
