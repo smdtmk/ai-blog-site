@@ -3,36 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Blog Site - テストページ</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        p {
-            color: #666;
-            line-height: 1.6;
-        }
-    </style>
+    <title>AI Blog Site - 最新のAI技術とトレンドを発信</title>
+    <meta name="description" content="AI技術の最新情報、機械学習、深層学習、ChatGPTなどの話題を分かりやすく解説するブログサイト">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>AI Blog Site</h1>
-        <p>AWS Amplifyを使用した静的Webサイトのテストページです。</p>
-        <p>このページが正常に表示されていれば、Amplifyの設定が成功しています。</p>
-    </div>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">AI Blog Site</a>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#">ホーム</a></li>
+                    <li><a href="#">記事</a></li>
+                    <li><a href="#">カテゴリ</a></li>
+                    <li><a href="#">お問い合わせ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main">
+        <!-- ヒーローセクション -->
+        <section class="hero">
+            <h1>AI技術の最前線を探る</h1>
+            <p>最新のAI技術、機械学習、深層学習の情報を分かりやすく解説。<br>エンジニアから初心者まで、AIの世界を一緒に学びましょう。</p>
+            <a href="#articles" class="cta-button">記事を読む</a>
+        </section>
+
+        <!-- 記事一覧 -->
+        <section class="articles" id="articles">
+            <article class="article-card">
+                <div class="article-image">画像プレースホルダー</div>
+                <div class="article-content">
+                    <h2 class="article-title">ChatGPTの活用方法：業務効率化のための実践ガイド</h2>
+                    <p class="article-excerpt">ChatGPTを使って日常業務を効率化する具体的な方法を紹介。プロンプトエンジニアリングの基本から応用まで...</p>
+                    <div class="article-meta">
+                        <span>2024年12月15日</span>
+                        <a href="#" class="read-more">続きを読む</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <div class="article-image">画像プレースホルダー</div>
+                <div class="article-content">
+                    <h2 class="article-title">機械学習入門：初心者でも分かるアルゴリズムの基礎</h2>
+                    <p class="article-excerpt">機械学習の基本概念から実装まで、初心者向けに分かりやすく解説。Pythonを使った実践例も含めて...</p>
+                    <div class="article-meta">
+                        <span>2024年12月12日</span>
+                        <a href="#" class="read-more">続きを読む</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <div class="article-image">画像プレースホルダー</div>
+                <div class="article-content">
+                    <h2 class="article-title">AWS Amplifyで始めるサーバーレス開発</h2>
+                    <p class="article-excerpt">AWS Amplifyを使ったモダンなWebアプリケーション開発の手法を解説。インフラエンジニア向けの実践的な内容...</p>
+                    <div class="article-meta">
+                        <span>2024年12月10日</span>
+                        <a href="#" class="read-more">続きを読む</a>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <div class="widget">
+                <h3>人気記事</h3>
+                <ul>
+                    <li><a href="#">ChatGPTの活用方法</a></li>
+                    <li><a href="#">機械学習入門ガイド</a></li>
+                    <li><a href="#">AWS Amplify実践</a></li>
+                    <li><a href="#">Python AI開発</a></li>
+                </ul>
+            </div>
+
+            <div class="widget">
+                <h3>カテゴリ</h3>
+                <ul>
+                    <li><a href="#">AI技術 (15)</a></li>
+                    <li><a href="#">機械学習 (12)</a></li>
+                    <li><a href="#">AWS (8)</a></li>
+                    <li><a href="#">プログラミング (10)</a></li>
+                </ul>
+            </div>
+
+            <div class="widget">
+                <h3>最新記事</h3>
+                <ul>
+                    <li><a href="#">ChatGPTの活用方法</a></li>
+                    <li><a href="#">機械学習入門</a></li>
+                    <li><a href="#">AWS Amplify開発</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <p>&copy; 2024 AI Blog Site. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
