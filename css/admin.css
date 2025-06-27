@@ -110,6 +110,8 @@ body {
 .articles-list {
     grid-column: 1 / -1;
     margin-top: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .form-group {
@@ -408,6 +410,8 @@ button[type="submit"]:hover {
 .tab-content {
     display: none;
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .tab-content.active {
