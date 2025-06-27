@@ -11,9 +11,9 @@ body {
 }
 
 .admin-container {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
     padding: 2rem;
+    min-height: 100vh;
 }
 
 .admin-header {
@@ -46,9 +46,7 @@ body {
 }
 
 .admin-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    width: 100%;
 }
 
 .editor-section, .preview-section, .articles-list {
@@ -60,6 +58,7 @@ body {
 
 .articles-list {
     grid-column: 1 / -1;
+    margin-top: 2rem;
 }
 
 .form-group {
@@ -218,16 +217,21 @@ button[type="submit"]:hover {
     border-radius: 8px;
 }
 
-.checkbox-label {
-    display: block;
-    cursor: pointer;
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-top: 0.5rem;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-group input[type="checkbox"] {
     width: auto;
-    margin-right: 0.5rem;
-    vertical-align: middle;
+    margin: 0;
+}
+
+.checkbox-group span {
+    cursor: pointer;
+    user-select: none;
 }
 
 .filter-controls {
@@ -465,10 +469,25 @@ button[type="submit"]:hover {
 
 .tab-content {
     display: none;
+    width: 100%;
 }
 
 .tab-content.active {
     display: block;
+}
+
+#article-tab {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+#image-tab {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
 }
 
 .form-row {
@@ -577,7 +596,6 @@ button[type="submit"]:hover {
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin-top: 2rem;
 }
 
 .gallery-filter {
@@ -687,5 +705,14 @@ button[type="submit"]:hover {
     
     .nav-btn {
         padding: 0.75rem 1rem;
+    }
+    
+    #article-tab,
+    #image-tab {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-container {
+        padding: 1rem;
     }
 }
