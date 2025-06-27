@@ -219,14 +219,15 @@ button[type="submit"]:hover {
 }
 
 .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: block;
     cursor: pointer;
+    margin-top: 0.5rem;
 }
 
 .checkbox-label input[type="checkbox"] {
     width: auto;
+    margin-right: 0.5rem;
+    vertical-align: middle;
 }
 
 .filter-controls {

@@ -130,7 +130,7 @@ class MarkdownLoader {
                     <p class="article-excerpt">${article.excerpt}</p>
                     <div class="article-meta">
                         <span>${article.frontmatter.date}</span>
-                        <a href="#" class="read-more" onclick="markdownLoader.showArticle('${article.filename}')">続きを読む</a>
+                        <a href="${article.filename}.html" class="read-more">続きを読む</a>
                     </div>
                     <div class="article-topics">
                         ${(article.frontmatter.topics || []).map(topic => 
@@ -150,7 +150,7 @@ class MarkdownLoader {
         const popularList = document.querySelector('.widget ul');
         if (popularList && this.articles.length > 0) {
             const popularHtml = this.articles.slice(0, 4).map(article => 
-                `<li><a href="#" onclick="markdownLoader.showArticle('${article.filename}')">${article.frontmatter.title}</a></li>`
+                `<li><a href="${article.filename}.html">${article.frontmatter.title}</a></li>`
             ).join('');
             popularList.innerHTML = popularHtml;
         }
