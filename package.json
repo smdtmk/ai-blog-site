@@ -1,20 +1,17 @@
 {
   "name": "ai-blog-site",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Zenn風のMarkdown記事管理システムを採用したAIブログサイト",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "python -m http.server 8000",
+    "upload-image": "./scripts/upload-image.sh"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smdtmk/ai-blog-site.git"
   },
-  "keywords": [],
+  "keywords": ["blog", "markdown", "aws", "amplify", "s3", "ai"],
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/smdtmk/ai-blog-site/issues"
-  },
+  "license": "MIT",
   "homepage": "https://github.com/smdtmk/ai-blog-site#readme"
 }

@@ -171,9 +171,10 @@ ai-blog-images-992382791277/
     └── aws-amplify-serverless/
 ```
 
-## 管理画面について
+## 管理画面
 
-従来の管理画面（admin.html）は廃止され、すべての記事管理はGit + Markdownで行います。
+- **画像管理**: `admin-image.html` - 画像のアップロード・管理
+- **記事管理**: Git + Markdownファイルで直接管理
 
 ## 開発者向け
 
@@ -189,10 +190,11 @@ npx serve .
 
 ### 記事の追加手順
 
-1. `articles/` に新しい `.md` ファイルを作成
-2. フロントマターを設定
-3. Markdownで記事を執筆
-4. `published: true` で公開
-5. Git にコミット・プッシュ
+1. `articles/記事名/` フォルダを作成
+2. `articles/記事名/index.md` ファイルを作成
+3. フロントマターを設定
+4. Markdownで記事を執筆
+5. 記事名.html ページを生成
+6. Git にコミット・プッシュ
 
 これでZenn風の記事管理システムが完成です！
