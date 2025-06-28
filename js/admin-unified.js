@@ -10,7 +10,6 @@ class UnifiedAdmin {
         this.initDateField();
         this.loadArticleOptions();
         this.displayArticles();
-        this.displayImagesGallery();
     }
 
     initEventListeners() {
@@ -39,12 +38,7 @@ class UnifiedAdmin {
             this.validateArticleName(e.target);
         });
 
-        // 画像選択ボタン
-        if (document.getElementById('selectImageBtn')) {
-            document.getElementById('selectImageBtn').addEventListener('click', () => {
-                this.showImageSelectModal();
-            });
-        }
+
 
         // 画像アップロードフォーム
         document.getElementById('imageUploadForm').addEventListener('submit', (e) => {
@@ -73,12 +67,7 @@ class UnifiedAdmin {
             this.handleFileSelect(e.target.files);
         });
 
-        // モーダル
-        if (document.querySelector('.modal-close')) {
-            document.querySelector('.modal-close').addEventListener('click', () => {
-                this.hideImageSelectModal();
-            });
-        }
+
     }
 
     initDateField() {
@@ -563,52 +552,9 @@ ${article.content}`;
         }
     }
 
-    displayImagesGallery() {
-        const container = document.getElementById('imagesGallery');
-        const filter = document.getElementById('galleryFilter').value;
-        
-        let filteredImages = this.uploadedImages;
-        if (filter !== 'all') {
-            filteredImages = this.uploadedImages.filter(img => img.articleName === filter);
-        }
 
-        if (filteredImages.length === 0) {
-            container.innerHTML = '<p>画像がありません。</p>';
-            return;
-        }
 
-        const html = `
-            <div class="gallery-grid">
-                ${filteredImages.map(image => `
-                    <div class="gallery-item" onclick="unifiedAdmin.selectImageFromGallery('${image.url}')">
-                        <img src="${image.url}" alt="${image.filename}">
-                        <div class="item-info">
-                            <div class="item-name">${image.filename}</div>
-                            <div class="item-meta">${image.articleName} | ${new Date(image.uploadDate).toLocaleDateString('ja-JP')}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
 
-        container.innerHTML = html;
-    }
-
-    showImageSelectModal() {
-        document.getElementById('imageSelectModal').style.display = 'flex';
-        document.getElementById('modalImageGallery').innerHTML = document.getElementById('imagesGallery').innerHTML;
-    }
-
-    hideImageSelectModal() {
-        document.getElementById('imageSelectModal').style.display = 'none';
-    }
-
-    selectImageFromGallery(url) {
-        document.getElementById('imageUrl').value = url;
-        document.getElementById('imagePreview').innerHTML = 
-            `<img src="${url}" alt="選択された画像" style="max-width: 200px; border-radius: 8px;">`;
-        this.hideImageSelectModal();
-    }
 }
 
 // 初期化
