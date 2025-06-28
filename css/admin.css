@@ -415,14 +415,23 @@ button[type="submit"]:hover {
 }
 
 #article-tab {
-    display: grid;
+    display: none;
     grid-template-columns: 1.2fr 0.8fr;
     gap: 2rem;
     align-items: start;
 }
 
+#article-tab.active {
+    display: grid;
+}
+
 #image-tab,
 #list-tab {
+    display: none;
+}
+
+#image-tab.active,
+#list-tab.active {
     display: block;
 }
 
