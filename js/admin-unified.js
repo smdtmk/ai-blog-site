@@ -413,17 +413,8 @@ ${article.content}`;
 
     async createArticleFolder(articleName) {
         try {
-            // S3に空のオブジェクトを作成してフォルダ構造を作る
-            console.log(`Creating folder: articles/${articleName}/`);
-            
-            // 実際の実装ではAWS SDKでS3にフォルダ作成
-            // await s3.putObject({
-            //     Bucket: this.bucketName,
-            //     Key: `articles/${articleName}/`,
-            //     Body: ''
-            // });
-            
-            return true;
+            const result = await apiConfig.createFolder(articleName);
+            return result.success;
         } catch (error) {
             console.error('フォルダ作成エラー:', error);
             return false;
@@ -476,8 +467,9 @@ ${article.content}`;
 
                 const imageUrl = `${this.s3BaseUrl}/articles/${articleName}/${processedFile.name}`;
                 
-                // 実際の実装ではS3にアップロード
-                console.log('Uploading:', { articleName, filename: processedFile.name });
+                // API経由でS3にアップロード
+                const { uploadUrl, imageUrl } = await apiConfig.getUploadUrl(processedFile.name, articleName);
+                await apiConfig.uploadToS3(uploadUrl, processedFile);
                 
                 this.uploadedImages.unshift({
                     articleName,

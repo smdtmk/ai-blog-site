@@ -30,3 +30,11 @@ aws-credentials.json
 # Local development
 .env
 .env.local
+
+# Dependencies
+node_modules/
+
+# CDK
+cdk.out/
+*.d.ts
+*.js.map

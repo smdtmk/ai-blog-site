@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { App } = require('aws-cdk-lib');
-const { BlogApiStack } = require('./cdk-api-stack');
+const { BlogApiStack } = require('./infrastructure/cdk-api-stack');
 
 const app = new App();
 new BlogApiStack(app, 'BlogApiStack', {
