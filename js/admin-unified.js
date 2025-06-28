@@ -71,8 +71,7 @@ class UnifiedAdmin {
     }
 
     initDateField() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').value = today;
+        // 日付フィールドは削除されたため、何もしない
     }
 
     switchTab(tabName) {
@@ -137,48 +136,44 @@ class UnifiedAdmin {
     }
 
     async saveArticle() {
-        const title = document.getElementById('title').value;
-        const emoji = document.getElementById('emoji').value;
-        const excerpt = document.getElementById('excerpt').value;
-        const topics = document.getElementById('topics').value.split(',').map(t => t.trim()).filter(t => t);
-        const date = document.getElementById('date').value;
-        const imageUrl = document.getElementById('imageUrl').value;
         const content = document.getElementById('content').value;
-        const isPublished = document.getElementById('isPublished').checked;
 
-        if (!title || !excerpt || !content) {
-            alert('必須項目を入力してください');
+        if (!content) {
+            alert('記事内容を入力してください');
             return;
         }
 
+        // フロントマターから記事名を抽出
+        const titleMatch = content.match(/^title:\s*["'](.+?)["']/m);
+        if (!titleMatch) {
+            alert('フロントマターにtitleを設定してください');
+            return;
+        }
+
+        const title = titleMatch[1];
         const slug = this.createSlug(title);
-        
-        const article = {
-            id: Date.now(),
-            title,
-            emoji: emoji || '📝',
-            excerpt,
-            topics,
-            date,
-            image: imageUrl,
-            content,
-            isPublished,
-            slug
-        };
 
-        // 記事フォルダとファイルを生成
-        const markdownContent = this.generateMarkdownFile(article);
-        const htmlContent = this.generateHtmlFile(article);
+        try {
+            // API経由で記事保存
+            await apiConfig.saveArticle(content, slug);
+            
+            const article = {
+                id: Date.now(),
+                title,
+                slug,
+                content,
+                date: new Date().toISOString().split('T')[0]
+            };
 
-        // 実際の実装では、ここでファイルを生成・保存
-        console.log('Generated files:', { slug, markdownContent, htmlContent });
+            this.articles.unshift(article);
+            this.saveArticles();
+            this.displayArticles();
+            this.clearForm();
 
-        this.articles.unshift(article);
-        this.saveArticles();
-        this.displayArticles();
-        this.clearForm();
-
-        alert('記事が保存されました！');
+            alert('記事が保存されました！');
+        } catch (error) {
+            alert(`記事保存に失敗しました: ${error.message}`);
+        }
     }
 
     createSlug(title) {
@@ -259,24 +254,17 @@ ${article.content}`;
 
     showPreview() {
         const content = document.getElementById('content').value;
-        const title = document.getElementById('title').value;
         
-        let html = '';
-        if (title) {
-            html += `<h1>${title}</h1>`;
-        }
         if (content) {
-            html += marked.parse(content);
+            document.getElementById('preview').innerHTML = marked.parse(content);
+        } else {
+            document.getElementById('preview').innerHTML = 'プレビューがここに表示されます';
         }
-        
-        document.getElementById('preview').innerHTML = html || 'プレビューがここに表示されます';
     }
 
     clearForm() {
         document.getElementById('articleForm').reset();
         document.getElementById('preview').innerHTML = 'プレビューがここに表示されます';
-        document.getElementById('imagePreview').innerHTML = '';
-        this.initDateField();
     }
 
     displayArticles() {
@@ -291,11 +279,7 @@ ${article.content}`;
             <div class="article-item">
                 <div class="article-info">
                     <h3>${article.title}</h3>
-                    <p>${article.excerpt}</p>
                     <div>
-                        <span class="status-badge ${article.isPublished ? 'status-published' : 'status-draft'}">
-                            ${article.isPublished ? '公開中' : '下書き'}
-                        </span>
                         <small>日付: ${article.date}</small>
                     </div>
                 </div>
@@ -312,19 +296,8 @@ ${article.content}`;
     editArticle(id) {
         const article = this.articles.find(a => a.id === id);
         if (article) {
-            document.getElementById('title').value = article.title;
-            document.getElementById('emoji').value = article.emoji;
-            document.getElementById('excerpt').value = article.excerpt;
-            document.getElementById('topics').value = article.topics.join(', ');
-            document.getElementById('date').value = article.date;
-            document.getElementById('imageUrl').value = article.image || '';
             document.getElementById('content').value = article.content;
-            document.getElementById('isPublished').checked = article.isPublished;
-            
-            if (article.image) {
-                document.getElementById('imagePreview').innerHTML = 
-                    `<img src="${article.image}" alt="プレビュー" style="max-width: 200px; border-radius: 8px;">`;
-            }
+            this.switchTab('article');
         }
     }
 
