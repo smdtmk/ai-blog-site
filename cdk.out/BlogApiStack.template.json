@@ -1,0 +1,777 @@
+{
+ "Resources": {
+  "BlogApiFunctionServiceRole7AA66058": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApiFunction/ServiceRole/Resource"
+   }
+  },
+  "BlogApiFunctionServiceRoleDefaultPolicy4178AF83": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::ai-blog-images-992382791277/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BlogApiFunctionServiceRoleDefaultPolicy4178AF83",
+    "Roles": [
+     {
+      "Ref": "BlogApiFunctionServiceRole7AA66058"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApiFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "BlogApiFunction773042D7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n        const AWS = require('aws-sdk');\n        const s3 = new AWS.S3();\n        const BUCKET_NAME = 'ai-blog-images-992382791277';\n\n        exports.handler = async (event) => {\n          const headers = {\n            'Access-Control-Allow-Origin': '*',\n            'Access-Control-Allow-Headers': '*',\n            'Access-Control-Allow-Methods': '*'\n          };\n\n          try {\n            const { httpMethod, path, body } = event;\n            const requestBody = body ? JSON.parse(body) : {};\n\n            if (httpMethod === 'POST' && event.resource === '/upload-url') {\n              const { fileName, articleName } = requestBody;\n              const key = `articles/${articleName}/${fileName}`;\n              \n              const signedUrl = s3.getSignedUrl('putObject', {\n                Bucket: BUCKET_NAME,\n                Key: key,\n                Expires: 300,\n                ContentType: 'image/*'\n              });\n              \n              return {\n                statusCode: 200,\n                headers,\n                body: JSON.stringify({ \n                  uploadUrl: signedUrl,\n                  imageUrl: `https://${BUCKET_NAME}.s3.ap-northeast-1.amazonaws.com/${key}`\n                })\n              };\n            }\n\n            if (httpMethod === 'POST' && event.resource === '/create-folder') {\n              const { articleName } = requestBody;\n              \n              await s3.putObject({\n                Bucket: BUCKET_NAME,\n                Key: `articles/${articleName}/`,\n                Body: ''\n              }).promise();\n              \n              return {\n                statusCode: 200,\n                headers,\n                body: JSON.stringify({ success: true, folder: articleName })\n              };\n            }\n\n            if (httpMethod === 'POST' && event.resource === '/articles') {\n              const { content, articleName } = requestBody;\n              \n              await s3.putObject({\n                Bucket: BUCKET_NAME,\n                Key: `articles/${articleName}/index.md`,\n                Body: content,\n                ContentType: 'text/markdown'\n              }).promise();\n              \n              return {\n                statusCode: 200,\n                headers,\n                body: JSON.stringify({ success: true, articleName })\n              };\n            }\n\n            return {\n              statusCode: 404,\n              headers,\n              body: JSON.stringify({ error: 'Not found' })\n            };\n          } catch (error) {\n            return {\n              statusCode: 500,\n              headers,\n              body: JSON.stringify({ error: error.message })\n            };\n          }\n        };\n      "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BlogApiFunctionServiceRole7AA66058",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "BlogApiFunctionServiceRoleDefaultPolicy4178AF83",
+    "BlogApiFunctionServiceRole7AA66058"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApiFunction/Resource"
+   }
+  },
+  "BlogApi17ECE3AB": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "AI Blog API"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Resource"
+   }
+  },
+  "BlogApiCloudWatchRole66A88900": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/CloudWatchRole/Resource"
+   }
+  },
+  "BlogApiAccountD776435D": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "BlogApiCloudWatchRole66A88900",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "BlogApi17ECE3AB"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Account"
+   }
+  },
+  "BlogApiDeploymentB3254DE39bfa41fc7cdf812ebc650f24355c7b81": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "DependsOn": [
+    "BlogApiarticlesOPTIONS9F729BA9",
+    "BlogApiarticlesPOST6283EDD8",
+    "BlogApiarticles538EF428",
+    "BlogApicreatefolderOPTIONS94C719E0",
+    "BlogApicreatefolderPOST331CDBA4",
+    "BlogApicreatefolderF4226034",
+    "BlogApiOPTIONSDA3C7AF0",
+    "BlogApiuploadurlOPTIONS1D081FDA",
+    "BlogApiuploadurlPOSTE8816E60",
+    "BlogApiuploadurl67C4C6C5"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "BlogApiDeploymentStageprodC8FF7BB4": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "BlogApiDeploymentB3254DE39bfa41fc7cdf812ebc650f24355c7b81"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "BlogApiAccountD776435D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "BlogApiOPTIONSDA3C7AF0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'*'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "BlogApi17ECE3AB",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/OPTIONS/Resource"
+   }
+  },
+  "BlogApiuploadurl67C4C6C5": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BlogApi17ECE3AB",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "upload-url",
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/upload-url/Resource"
+   }
+  },
+  "BlogApiuploadurlOPTIONS1D081FDA": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'*'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BlogApiuploadurl67C4C6C5"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/upload-url/OPTIONS/Resource"
+   }
+  },
+  "BlogApiuploadurlPOSTApiPermissionBlogApiStackBlogApiB5416D10POSTuploadurlF8BBDEA7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/",
+       {
+        "Ref": "BlogApiDeploymentStageprodC8FF7BB4"
+       },
+       "/POST/upload-url"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/upload-url/POST/ApiPermission.BlogApiStackBlogApiB5416D10.POST..upload-url"
+   }
+  },
+  "BlogApiuploadurlPOSTApiPermissionTestBlogApiStackBlogApiB5416D10POSTuploadurl8F847C68": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/test-invoke-stage/POST/upload-url"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/upload-url/POST/ApiPermission.Test.BlogApiStackBlogApiB5416D10.POST..upload-url"
+   }
+  },
+  "BlogApiuploadurlPOSTE8816E60": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "BlogApiFunction773042D7",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BlogApiuploadurl67C4C6C5"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/upload-url/POST/Resource"
+   }
+  },
+  "BlogApicreatefolderF4226034": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BlogApi17ECE3AB",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "create-folder",
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/create-folder/Resource"
+   }
+  },
+  "BlogApicreatefolderOPTIONS94C719E0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'*'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BlogApicreatefolderF4226034"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/create-folder/OPTIONS/Resource"
+   }
+  },
+  "BlogApicreatefolderPOSTApiPermissionBlogApiStackBlogApiB5416D10POSTcreatefolder4D7C8864": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/",
+       {
+        "Ref": "BlogApiDeploymentStageprodC8FF7BB4"
+       },
+       "/POST/create-folder"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/create-folder/POST/ApiPermission.BlogApiStackBlogApiB5416D10.POST..create-folder"
+   }
+  },
+  "BlogApicreatefolderPOSTApiPermissionTestBlogApiStackBlogApiB5416D10POSTcreatefolder5574848D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/test-invoke-stage/POST/create-folder"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/create-folder/POST/ApiPermission.Test.BlogApiStackBlogApiB5416D10.POST..create-folder"
+   }
+  },
+  "BlogApicreatefolderPOST331CDBA4": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "BlogApiFunction773042D7",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BlogApicreatefolderF4226034"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/create-folder/POST/Resource"
+   }
+  },
+  "BlogApiarticles538EF428": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BlogApi17ECE3AB",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "articles",
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/articles/Resource"
+   }
+  },
+  "BlogApiarticlesOPTIONS9F729BA9": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'*'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BlogApiarticles538EF428"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/articles/OPTIONS/Resource"
+   }
+  },
+  "BlogApiarticlesPOSTApiPermissionBlogApiStackBlogApiB5416D10POSTarticles68752200": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/",
+       {
+        "Ref": "BlogApiDeploymentStageprodC8FF7BB4"
+       },
+       "/POST/articles"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/articles/POST/ApiPermission.BlogApiStackBlogApiB5416D10.POST..articles"
+   }
+  },
+  "BlogApiarticlesPOSTApiPermissionTestBlogApiStackBlogApiB5416D10POSTarticles9F992423": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlogApiFunction773042D7",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:ap-northeast-1:992382791277:",
+       {
+        "Ref": "BlogApi17ECE3AB"
+       },
+       "/test-invoke-stage/POST/articles"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/articles/POST/ApiPermission.Test.BlogApiStackBlogApiB5416D10.POST..articles"
+   }
+  },
+  "BlogApiarticlesPOST6283EDD8": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "BlogApiFunction773042D7",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BlogApiarticles538EF428"
+    },
+    "RestApiId": {
+     "Ref": "BlogApi17ECE3AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/BlogApi/Default/articles/POST/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQSw7CMAxEz8I+DRBxAT5ih0BwAGRSA4Z8qiYBVVXujgkgYOXnmbFsWUk1UnI0gHuodH2tDB1kv4ugr4KlfW/AHmqQ/TI5Hck7MT+6X95gaykE7rIgsLLfeoNPo9SNN6S7kiuUBTR0goh36DiKIU4bKukvTrX2yUWxwMb4ziIjqz8dX3cqK17Aoz61GmcQUKwwnn39NN/0cd9LCuf8J69TbFLMwvka5SUMb0rJ8YR/cglEVcu3kEW5fdUHDct6vjABAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "BlogApiStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "BlogApiEndpointAFF8BF23": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "BlogApi17ECE3AB"
+      },
+      ".execute-api.ap-northeast-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "BlogApiDeploymentStageprodC8FF7BB4"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

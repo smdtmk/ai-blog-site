@@ -1,0 +1,20 @@
+{
+  "projectName": "ai-blog-site",
+  "appType": "javascript",
+  "javascript": {
+    "framework": "none",
+    "config": {
+      "SourceDir": ".",
+      "DistributionDir": ".",
+      "BuildCommand": "npm run build",
+      "StartCommand": "npm start"
+    }
+  },
+  "providers": {
+    "awscloudformation": {
+      "configLevel": "project",
+      "useProfile": true,
+      "profileName": "default"
+    }
+  }
+}

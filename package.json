@@ -4,14 +4,33 @@
   "description": "Zenn風のMarkdown記事管理システムを採用したAIブログサイト",
   "scripts": {
     "dev": "python -m http.server 8000",
-    "upload-image": "./scripts/upload-image.sh"
+    "upload-image": "./scripts/upload-image.sh",
+    "cdk:deploy": "cdk deploy",
+    "cdk:destroy": "cdk destroy",
+    "cdk:synth": "cdk synth"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smdtmk/ai-blog-site.git"
   },
-  "keywords": ["blog", "markdown", "aws", "amplify", "s3", "ai"],
+  "keywords": [
+    "blog",
+    "markdown",
+    "aws",
+    "amplify",
+    "s3",
+    "ai"
+  ],
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/smdtmk/ai-blog-site#readme"
+  "homepage": "https://github.com/smdtmk/ai-blog-site#readme",
+  "main": "cdk-api-stack.js",
+  "bugs": {
+    "url": "https://github.com/smdtmk/ai-blog-site/issues"
+  },
+  "dependencies": {
+    "aws-cdk": "^2.1019.2",
+    "aws-cdk-lib": "^2.202.0",
+    "constructs": "^10.4.2"
+  }
 }
