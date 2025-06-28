@@ -414,6 +414,10 @@ button[type="submit"]:hover {
     display: block !important;
 }
 
+#article-tab.active {
+    display: grid !important;
+}
+
 #article-tab {
     display: none;
     grid-template-columns: 1.2fr 0.8fr;
@@ -421,9 +425,7 @@ button[type="submit"]:hover {
     align-items: start;
 }
 
-#article-tab.active {
-    display: grid;
-}
+
 
 #image-tab,
 #list-tab {

@@ -75,6 +75,8 @@ class UnifiedAdmin {
     }
 
     switchTab(tabName) {
+        console.log('Switching to tab:', tabName);
+        
         // タブボタンの切り替え
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -84,12 +86,11 @@ class UnifiedAdmin {
         // タブコンテンツの切り替え
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
-            content.style.display = 'none';
         });
+        
         const activeTab = document.getElementById(`${tabName}-tab`);
         if (activeTab) {
             activeTab.classList.add('active');
-            activeTab.style.display = 'block';
         }
     }
 
