@@ -15,7 +15,11 @@ class UnifiedAdmin {
     initEventListeners() {
         // タブ切り替え
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = e.target.getAttribute('data-tab');
+                this.switchTab(tabName);
+            });
         });
 
         // 記事フォーム
@@ -77,17 +81,25 @@ class UnifiedAdmin {
     switchTab(tabName) {
         console.log('Switching to tab:', tabName);
         
-        // タブボタンの切り替え
-        document.querySelectorAll('.nav-btn').forEach(btn => {
+        // すべてのタブボタンからactiveクラスを削除
+        const tabButtons = document.querySelectorAll('.nav-btn');
+        tabButtons.forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        
+        // クリックされたタブボタンにactiveクラスを追加
+        const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
 
-        // タブコンテンツの切り替え
-        document.querySelectorAll('.tab-content').forEach(content => {
+        // すべてのタブコンテンツからactiveクラスを削除
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
             content.classList.remove('active');
         });
         
+        // 選択されたタブコンテンツにactiveクラスを追加
         const activeTab = document.getElementById(`${tabName}-tab`);
         if (activeTab) {
             activeTab.classList.add('active');
