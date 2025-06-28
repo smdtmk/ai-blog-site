@@ -440,8 +440,6 @@ ${article.content}`;
                     processedFile = await this.optimizeImage(file);
                 }
 
-                const imageUrl = `${this.s3BaseUrl}/articles/${articleName}/${processedFile.name}`;
-                
                 // API経由でS3にアップロード
                 const { uploadUrl, imageUrl } = await apiConfig.getUploadUrl(processedFile.name, articleName);
                 await apiConfig.uploadToS3(uploadUrl, processedFile);
