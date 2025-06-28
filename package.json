@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Zenn風のMarkdown記事管理システムを採用したAIブログサイト",
   "scripts": {
-    "dev": "python -m http.server 8000",
+    "dev": "cd public && python -m http.server 8000",
     "upload-image": "./scripts/upload-image.sh",
     "cdk:deploy": "cd infrastructure && npx cdk deploy",
     "cdk:destroy": "cd infrastructure && npx cdk destroy",

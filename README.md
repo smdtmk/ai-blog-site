@@ -1,200 +1,87 @@
 # AI Blog Site
 
-Zenn風のMarkdown記事管理システムを採用したブログサイトです。
+サーバーレス構成のAIブログ管理システム
 
-## 記事の書き方
+## 概要
 
-### 1. 記事ファイルの作成
+AIや技術に関する記事を管理・公開するためのブログサイトです。
+Zenn風のMarkdownベースの記事管理とAPI Gateway + Lambdaでのサーバーレス構成を採用しています。
 
-`articles/` ディレクトリに `.md` ファイルを作成します。
+## 技術スタック
+
+- **フロントエンド**: HTML, CSS, JavaScript
+- **ホスティング**: AWS Amplify
+- **API**: API Gateway + Lambda
+- **ストレージ**: Amazon S3
+- **インフラ**: AWS CDK
+- **記事管理**: Markdown + Front Matter
+
+## プロジェクト構造
 
 ```
-articles/
-├── hello-world.md
-├── ai-introduction.md
-└── aws-guide.md
+ai-blog-site/
+├── infrastructure/     # CDKインフラコード
+│   ├── cdk-api-stack.js   # API Gateway + Lambda定義
+│   └── cdk-app.js         # CDKアプリケーション
+├── public/             # Webコンテンツ
+│   ├── css/               # スタイルシート
+│   ├── js/                # JavaScript
+│   └── *.html             # HTMLページ
+└── package.json        # プロジェクト設定
 ```
 
-### 2. フロントマターの設定
+## 使用方法
 
-各記事の先頭に以下の形式でメタデータを記述します：
+### 管理画面での記事作成
 
-```markdown
----
-title: "記事のタイトル"
-emoji: "🤖"
-type: "tech"
-topics: ["AI", "機械学習", "Python"]
-published: true
-date: "2024-12-15"
----
+1. `public/admin.html` にアクセス
+2. **記事作成タブ**: Markdownで記事を作成
+3. **画像アップロードタブ**: ドラッグ&ドロップで画像アップロード
+4. **記事一覧タブ**: 保存済み記事の管理
 
-# 記事の内容
+### Markdownフォーマット
 
-ここに記事の本文をMarkdownで記述します。
-```
-
-### 3. フロントマターの項目
-
-| 項目 | 必須 | 説明 |
-|------|------|------|
-| `title` | ✅ | 記事のタイトル |
-| `emoji` | | 記事を表すemoji（デフォルト: 📝） |
-| `type` | | 記事の種類（tech, idea など） |
-| `topics` | | 記事のトピック（配列形式） |
-| `published` | ✅ | 公開状態（true/false） |
-| `date` | ✅ | 公開日（YYYY-MM-DD形式） |
-| `image` | | アイキャッチ画像のパス |
-
-### 4. 画像の管理（S3）
-
-#### 画像のアップロード
-
-**方法1: コマンドラインスクリプト**
-```bash
-# 画像をアップロード（自動最適化付き）
-./scripts/upload-image.sh chatgpt-guide ~/Desktop/workflow.png
-
-# アップロード後、URLが表示されます
-# https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/workflow.png
-```
-
-**方法2: 管理画面**
-- `admin-image.html` でブラウザからアップロード
-- ドラッグ&ドロップ対応
-- 自動リサイズ・最適化
-
-#### アイキャッチ画像の設定
-
-フロントマターでS3 URLを指定：
 ```markdown
 ---
 title: "記事タイトル"
-image: "https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png"
+emoji: "🤖"
+type: "tech"
+topics: ["AI", "ChatGPT"]
+published: true
+date: "2024-12-15"
+image: "https://..."
 ---
+
+# 記事タイトル
+
+記事の内容をここに書きます。
 ```
 
-#### 記事内での画像使用
+## インフラ管理
 
-```markdown
-![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png)
-
-<!-- キャプション付き -->
-![Altテキスト](https://ai-blog-images-992382791277.s3.ap-northeast-1.amazonaws.com/articles/chatgpt-guide/sample.png)
-*画像の説明文*
-```
-
-#### 画像最適化機能
-
-- **自動リサイズ**: 1200x800px以下に自動調整
-- **品質最適化**: JPEG品質85%で圧縮
-- **メタデータ削除**: EXIF情報を自動削除
-- **ファイルサイズ減**: 平均60-80%のサイズ減
-
-#### 手動アップロード
+### CDKデプロイ
 
 ```bash
-# AWS CLIで直接アップロード
-aws s3 cp image.png s3://ai-blog-images-992382791277/articles/
+# API Gateway + Lambdaをデプロイ
+npm run cdk:deploy
+
+# インフラを削除
+npm run cdk:destroy
 ```
-
-### 5. Markdownの書き方
-
-#### 見出し
-```markdown
-# 大見出し
-## 中見出し
-### 小見出し
-```
-
-#### コードブロック
-```markdown
-\```python
-def hello_world():
-    print("Hello, World!")
-\```
-```
-
-#### リスト
-```markdown
-- 項目1
-- 項目2
-  - サブ項目
-
-1. 番号付きリスト
-2. 項目2
-```
-
-#### 引用
-```markdown
-> これは引用文です。
-```
-
-## デプロイ方法
-
-1. 記事を作成・編集
-2. Gitにコミット・プッシュ
-3. AWS Amplifyが自動デプロイ
-
-```bash
-git add articles/new-article.md
-git commit -m "Add new article: タイトル"
-git push origin main
-```
-
-## ディレクトリ構造
-
-```
-├── articles/                    # 記事フォルダ
-│   ├── chatgpt-guide/           # 記事ごとのフォルダ
-│   │   └── index.md         # 記事ファイル
-│   ├── machine-learning-intro/
-│   │   └── index.md
-│   └── aws-amplify-serverless/
-│       └── index.md
-├── scripts/                 # ユーティリティスクリプト
-│   └── upload-image.sh      # 画像アップロード
-├── css/                     # スタイルシート
-├── js/                      # JavaScript
-├── index.html               # トップページ
-├── contact.html             # お問い合わせ
-├── admin-image.html         # 画像管理画面
-└── README.md                # このファイル
-
-# S3構造
-ai-blog-images-992382791277/
-└── articles/
-    ├── chatgpt-guide/
-    │   └── workflow.svg
-    ├── machine-learning-intro/
-    │   └── algorithm.svg
-    └── aws-amplify-serverless/
-```
-
-## 管理画面
-
-- **画像管理**: `admin-image.html` - 画像のアップロード・管理
-- **記事管理**: Git + Markdownファイルで直接管理
-
-## 開発者向け
 
 ### ローカル開発
 
 ```bash
-# 静的サーバーを起動（例：Python）
-python -m http.server 8000
-
-# または Node.js
-npx serve .
+# ローカルサーバーを起動
+npm run dev
 ```
 
-### 記事の追加手順
+## デプロイ
 
-1. `articles/記事名/` フォルダを作成
-2. `articles/記事名/index.md` ファイルを作成
-3. フロントマターを設定
-4. Markdownで記事を執筆
-5. 記事名.html ページを生成
-6. Git にコミット・プッシュ
+AWS Amplifyでホスティングされています。GitHubにプッシュすると自動的にデプロイされます。
 
-これでZenn風の記事管理システムが完成です！
+## APIエンドポイント
+
+- `POST /upload-url` - 画像アップロード用プリサインドURL生成
+- `POST /create-folder` - S3フォルダ作成
+- `POST /articles` - 記事保存
