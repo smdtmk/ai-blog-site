@@ -70,10 +70,24 @@ image: &quot;https://...&quot;
                     <h2>画像アップロード</h2>
                     <form id="imageUploadForm">
                         <div class="form-group">
-                            <label for="articleSelect">記事フォルダ</label>
-                            <select id="articleSelect" required>
-                                <option value="">記事を選択してください</option>
-                            </select>
+                            <label>記事フォルダ選択</label>
+                            <div class="folder-selection">
+                                <div class="radio-group">
+                                    <input type="radio" id="existingFolder" name="folderType" value="existing" checked>
+                                    <label for="existingFolder">既存の記事フォルダ</label>
+                                </div>
+                                <select id="articleSelect" required>
+                                    <option value="">記事を選択してください</option>
+                                </select>
+                            </div>
+                            <div class="folder-selection">
+                                <div class="radio-group">
+                                    <input type="radio" id="newFolder" name="folderType" value="new">
+                                    <label for="newFolder">新しい記事フォルダを作成</label>
+                                </div>
+                                <input type="text" id="newArticleName" placeholder="記事名を入力（例: my-new-article）" disabled>
+                                <small class="help-text">英数字とハイフンのみ使用可能</small>
+                            </div>
                         </div>
 
                         <div class="form-group">

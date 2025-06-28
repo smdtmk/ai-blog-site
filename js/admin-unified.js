@@ -29,10 +29,22 @@ class UnifiedAdmin {
             this.showPreview();
         });
 
-        // 画像選択ボタン
-        document.getElementById('selectImageBtn').addEventListener('click', () => {
-            this.showImageSelectModal();
+        // フォルダ選択ラジオボタン
+        document.querySelectorAll('input[name="folderType"]').forEach(radio => {
+            radio.addEventListener('change', () => this.toggleFolderSelection());
         });
+
+        // 新しい記事名のバリデーション
+        document.getElementById('newArticleName').addEventListener('input', (e) => {
+            this.validateArticleName(e.target);
+        });
+
+        // 画像選択ボタン
+        if (document.getElementById('selectImageBtn')) {
+            document.getElementById('selectImageBtn').addEventListener('click', () => {
+                this.showImageSelectModal();
+            });
+        }
 
         // 画像アップロードフォーム
         document.getElementById('imageUploadForm').addEventListener('submit', (e) => {
@@ -62,14 +74,11 @@ class UnifiedAdmin {
         });
 
         // モーダル
-        document.querySelector('.modal-close').addEventListener('click', () => {
-            this.hideImageSelectModal();
-        });
-
-        // フィルター
-        document.getElementById('galleryFilter').addEventListener('change', () => {
-            this.displayImagesGallery();
-        });
+        if (document.querySelector('.modal-close')) {
+            document.querySelector('.modal-close').addEventListener('click', () => {
+                this.hideImageSelectModal();
+            });
+        }
     }
 
     initDateField() {
@@ -116,22 +125,26 @@ class UnifiedAdmin {
 
     loadArticleOptions() {
         const articleSelect = document.getElementById('articleSelect');
-        const galleryFilter = document.getElementById('galleryFilter');
         
         // 既存記事のフォルダ名を取得
         const articleFolders = ['chatgpt-guide', 'machine-learning-intro', 'aws-amplify-serverless'];
         
         articleFolders.forEach(folder => {
-            const option1 = document.createElement('option');
-            option1.value = folder;
-            option1.textContent = folder;
-            articleSelect.appendChild(option1);
-
-            const option2 = document.createElement('option');
-            option2.value = folder;
-            option2.textContent = folder;
-            galleryFilter.appendChild(option2);
+            this.addArticleOption(folder);
         });
+    }
+
+    addArticleOption(folder) {
+        const articleSelect = document.getElementById('articleSelect');
+        
+        // 重複チェック
+        const existingOption = Array.from(articleSelect.options).find(option => option.value === folder);
+        if (existingOption) return;
+        
+        const option = document.createElement('option');
+        option.value = folder;
+        option.textContent = folder;
+        articleSelect.appendChild(option);
     }
 
     async saveArticle() {
@@ -369,12 +382,82 @@ ${article.content}`;
         this.displayUploadPreview();
     }
 
-    async handleImageUpload() {
-        const articleName = document.getElementById('articleSelect').value;
-        const optimizeImage = document.getElementById('optimizeImage').checked;
+    toggleFolderSelection() {
+        const folderType = document.querySelector('input[name="folderType"]:checked').value;
+        const articleSelect = document.getElementById('articleSelect');
+        const newArticleName = document.getElementById('newArticleName');
+        
+        if (folderType === 'existing') {
+            articleSelect.disabled = false;
+            articleSelect.required = true;
+            newArticleName.disabled = true;
+            newArticleName.required = false;
+        } else {
+            articleSelect.disabled = true;
+            articleSelect.required = false;
+            newArticleName.disabled = false;
+            newArticleName.required = true;
+        }
+    }
 
-        if (!articleName || this.selectedFiles.length === 0) {
-            alert('記事フォルダと画像ファイルを選択してください');
+    validateArticleName(input) {
+        const value = input.value;
+        const validPattern = /^[a-z0-9-]+$/;
+        
+        if (value && !validPattern.test(value)) {
+            input.setCustomValidity('英小文字、数字、ハイフンのみ使用できます');
+        } else {
+            input.setCustomValidity('');
+        }
+    }
+
+    async createArticleFolder(articleName) {
+        try {
+            // S3に空のオブジェクトを作成してフォルダ構造を作る
+            console.log(`Creating folder: articles/${articleName}/`);
+            
+            // 実際の実装ではAWS SDKでS3にフォルダ作成
+            // await s3.putObject({
+            //     Bucket: this.bucketName,
+            //     Key: `articles/${articleName}/`,
+            //     Body: ''
+            // });
+            
+            return true;
+        } catch (error) {
+            console.error('フォルダ作成エラー:', error);
+            return false;
+        }
+    }
+
+    async handleImageUpload() {
+        const folderType = document.querySelector('input[name="folderType"]:checked').value;
+        const optimizeImage = document.getElementById('optimizeImage').checked;
+        let articleName;
+
+        if (folderType === 'existing') {
+            articleName = document.getElementById('articleSelect').value;
+            if (!articleName) {
+                alert('記事を選択してください');
+                return;
+            }
+        } else {
+            articleName = document.getElementById('newArticleName').value;
+            if (!articleName) {
+                alert('新しい記事名を入力してください');
+                return;
+            }
+            
+            // 新しいフォルダを作成
+            const folderCreated = await this.createArticleFolder(articleName);
+            if (!folderCreated) {
+                alert('フォルダの作成に失敗しました');
+                return;
+            }
+        }
+
+        if (this.selectedFiles.length === 0) {
+            alert('画像ファイルを選択してください');
             return;
         }
 
@@ -407,10 +490,16 @@ ${article.content}`;
             }
 
             this.saveUploadedImages();
-            this.displayImagesGallery();
+            
+            // 新しいフォルダを作成した場合、選択肢に追加
+            const folderType = document.querySelector('input[name="folderType"]:checked').value;
+            if (folderType === 'new') {
+                this.addArticleOption(articleName);
+            }
 
             this.showUploadResult(`
                 <h3>✅ ${this.selectedFiles.length}件のアップロード完了!</h3>
+                <p><strong>フォルダ:</strong> ${articleName}</p>
                 ${uploadedUrls.map(url => `
                     <div style="margin: 0.5rem 0;">
                         <code>${url}</code>
@@ -422,6 +511,10 @@ ${article.content}`;
             this.selectedFiles = [];
             this.displayUploadPreview();
             document.getElementById('imageUploadForm').reset();
+            
+            // ラジオボタンをリセット
+            document.getElementById('existingFolder').checked = true;
+            this.toggleFolderSelection();
 
         } catch (error) {
             this.showUploadResult(`アップロードに失敗しました: ${error.message}`, 'error');

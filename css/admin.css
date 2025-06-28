@@ -431,6 +431,49 @@ button[type="submit"]:hover {
     max-width: none;
 }
 
+.folder-selection {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+}
+
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.radio-group input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+.radio-group label {
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.folder-selection input[type="text"],
+.folder-selection select {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.folder-selection input:disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.help-text {
+    display: block;
+    margin-top: 0.25rem;
+    color: #666;
+    font-size: 0.8rem;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
