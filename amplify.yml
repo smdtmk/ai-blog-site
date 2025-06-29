@@ -1,14 +1,19 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - echo "Pre-build phase"
     build:
       commands:
-        - echo "Building static site"
+        - echo "Build phase - copying files"
+        - cp -r public/* .
         - ls -la
-        - ls -la public/
   artifacts:
-    baseDirectory: public
+    baseDirectory: .
     files:
       - '**/*'
+    excludePaths:
+      - public
   cache:
     paths: []
