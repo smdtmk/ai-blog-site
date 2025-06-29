@@ -1,7 +1,8 @@
-# Static file routing
-/admin.html /admin.html 200
-/contact.html /contact.html 200
-/index.html /index.html 200
+# Exact file matches
+/admin.html /admin.html 200!
+/contact.html /contact.html 200!
+/index.html /index.html 200!
+/ /index.html 200
 
-# Fallback for SPA (only for paths that don't match static files)
-/* /index.html 404
+# Default fallback
+/* /index.html 200
