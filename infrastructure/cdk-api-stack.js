@@ -36,10 +36,16 @@ class BlogApiStack extends Stack {
               const command = new PutObjectCommand({
                 Bucket: BUCKET_NAME,
                 Key: key,
-                ContentType: 'image/*'
+                ContentType: fileName.endsWith('.png') ? 'image/png' : 
+                           fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ? 'image/jpeg' : 
+                           fileName.endsWith('.gif') ? 'image/gif' : 
+                           fileName.endsWith('.webp') ? 'image/webp' : 'image/jpeg'
               });
               
-              const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+              const signedUrl = await getSignedUrl(s3, command, { 
+                expiresIn: 300,
+                signableHeaders: new Set(['content-type'])
+              });
               
               return {
                 statusCode: 200,

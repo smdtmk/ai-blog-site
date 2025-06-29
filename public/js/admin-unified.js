@@ -457,8 +457,14 @@ ${article.content}`;
                 }
 
                 // API経由でS3にアップロード
+                console.log('Getting upload URL for:', processedFile.name);
                 const { uploadUrl, imageUrl } = await apiConfig.getUploadUrl(processedFile.name, articleName);
+                console.log('Upload URL received:', uploadUrl);
+                console.log('Image URL:', imageUrl);
+                
+                console.log('Starting S3 upload...');
                 await apiConfig.uploadToS3(uploadUrl, processedFile);
+                console.log('S3 upload completed for:', processedFile.name);
                 
                 this.uploadedImages.unshift({
                     articleName,

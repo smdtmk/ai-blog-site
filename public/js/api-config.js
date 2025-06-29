@@ -53,6 +53,13 @@ class ApiConfig {
 
     // S3に直接アップロード
     async uploadToS3(uploadUrl, file) {
+        console.log('Uploading to S3:', {
+            url: uploadUrl,
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+        });
+        
         const response = await fetch(uploadUrl, {
             method: 'PUT',
             body: file,
@@ -61,8 +68,16 @@ class ApiConfig {
             }
         });
         
+        console.log('S3 response:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok
+        });
+        
         if (!response.ok) {
-            throw new Error(`S3 upload failed: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('S3 upload error details:', errorText);
+            throw new Error(`S3 upload failed: ${response.status} ${response.statusText} - ${errorText}`);
         }
         
         return response;
