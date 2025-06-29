@@ -14,33 +14,48 @@ class UnifiedAdmin {
 
     initEventListeners() {
         // タブ切り替え
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabName = e.target.getAttribute('data-tab');
-                this.switchTab(tabName);
+        const navBtns = document.querySelectorAll('.nav-btn');
+        if (navBtns.length > 0) {
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = e.target.getAttribute('data-tab');
+                    this.switchTab(tabName);
+                });
             });
-        });
+        }
 
         // 記事フォーム
-        document.getElementById('articleForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveArticle();
-        });
+        const articleForm = document.getElementById('articleForm');
+        if (articleForm) {
+            articleForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveArticle();
+            });
+        }
 
-        document.getElementById('previewBtn').addEventListener('click', () => {
-            this.showPreview();
-        });
+        const previewBtn = document.getElementById('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                this.showPreview();
+            });
+        }
 
         // フォルダ選択ラジオボタン
-        document.querySelectorAll('input[name="folderType"]').forEach(radio => {
-            radio.addEventListener('change', () => this.toggleFolderSelection());
-        });
+        const folderRadios = document.querySelectorAll('input[name="folderType"]');
+        if (folderRadios.length > 0) {
+            folderRadios.forEach(radio => {
+                radio.addEventListener('change', () => this.toggleFolderSelection());
+            });
+        }
 
         // 新しい記事名のバリデーション
-        document.getElementById('newArticleName').addEventListener('input', (e) => {
-            this.validateArticleName(e.target);
-        });
+        const newArticleName = document.getElementById('newArticleName');
+        if (newArticleName) {
+            newArticleName.addEventListener('input', (e) => {
+                this.validateArticleName(e.target);
+            });
+        }
 
 
 
