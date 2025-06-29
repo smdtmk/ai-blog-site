@@ -13,8 +13,9 @@ class BlogApiStack extends Stack {
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: Code.fromInline(`
-        const AWS = require('aws-sdk');
-        const s3 = new AWS.S3();
+        const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+        const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+        const s3 = new S3Client({ region: 'ap-northeast-1' });
         const BUCKET_NAME = 'ai-blog-images-992382791277';
 
         exports.handler = async (event) => {
@@ -32,12 +33,13 @@ class BlogApiStack extends Stack {
               const { fileName, articleName } = requestBody;
               const key = \`articles/\${articleName}/\${fileName}\`;
               
-              const signedUrl = s3.getSignedUrl('putObject', {
+              const command = new PutObjectCommand({
                 Bucket: BUCKET_NAME,
                 Key: key,
-                Expires: 300,
                 ContentType: 'image/*'
               });
+              
+              const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
               
               return {
                 statusCode: 200,
@@ -56,11 +58,13 @@ class BlogApiStack extends Stack {
               console.log('Bucket:', BUCKET_NAME);
               
               try {
-                await s3.putObject({
+                const command = new PutObjectCommand({
                   Bucket: BUCKET_NAME,
                   Key: \`articles/\${articleName}/\`,
                   Body: ''
-                }).promise();
+                });
+                
+                await s3.send(command);
                 
                 console.log('Folder created successfully');
                 return {
@@ -85,12 +89,14 @@ class BlogApiStack extends Stack {
             if (httpMethod === 'POST' && event.resource === '/articles') {
               const { content, articleName } = requestBody;
               
-              await s3.putObject({
+              const command = new PutObjectCommand({
                 Bucket: BUCKET_NAME,
                 Key: \`articles/\${articleName}/index.md\`,
                 Body: content,
                 ContentType: 'text/markdown'
-              }).promise();
+              });
+              
+              await s3.send(command);
               
               return {
                 statusCode: 200,
