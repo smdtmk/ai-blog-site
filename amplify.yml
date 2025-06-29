@@ -3,7 +3,9 @@ frontend:
   phases:
     build:
       commands:
-        - echo "No build required for static site"
+        - echo "Building static site"
+        - ls -la
+        - ls -la public/
   artifacts:
     baseDirectory: public
     files:
