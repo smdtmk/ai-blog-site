@@ -1,11 +1,11 @@
-# Exact file matches - prevent directory redirects
-/admin.html /admin.html 200
-/contact.html /contact.html 200
-/index.html /index.html 200
+# Force exact file matches
+/admin.html /admin.html 200!
+/contact.html /contact.html 200!
 / /index.html 200
 
-# Prevent admin/ directory access
-/admin/* /admin.html 301
+# Redirect admin directory to admin.html
+/admin /admin.html 301!
+/admin/ /admin.html 301!
 
-# Default fallback
+# Fallback
 /* /index.html 200
