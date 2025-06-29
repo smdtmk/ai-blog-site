@@ -1,5 +1,5 @@
 {
-  "app": "node infrastructure/cdk-app.js",
+  "app": "node cdk-app.js",
   "watch": {
     "include": [
       "**"

@@ -53,13 +53,19 @@ class ApiConfig {
 
     // S3に直接アップロード
     async uploadToS3(uploadUrl, file) {
-        return fetch(uploadUrl, {
+        const response = await fetch(uploadUrl, {
             method: 'PUT',
             body: file,
             headers: {
                 'Content-Type': file.type
             }
         });
+        
+        if (!response.ok) {
+            throw new Error(`S3 upload failed: ${response.status} ${response.statusText}`);
+        }
+        
+        return response;
     }
 }
 
