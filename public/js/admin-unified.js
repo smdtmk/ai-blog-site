@@ -141,9 +141,10 @@ class UnifiedAdmin {
 
     loadArticleOptions() {
         const articleSelect = document.getElementById('articleSelect');
+        if (!articleSelect) return;
         
-        // 既存記事のフォルダ名を取得
-        const articleFolders = ['chatgpt-guide', 'machine-learning-intro', 'aws-amplify-serverless'];
+        // 既存記事のフォルダ名を取得（サンプル記事は削除済み）
+        const articleFolders = [];
         
         articleFolders.forEach(folder => {
             this.addArticleOption(folder);
