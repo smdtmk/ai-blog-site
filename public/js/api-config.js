@@ -29,7 +29,7 @@ class ApiConfig {
 
     // プリサインドURL取得
     async getUploadUrl(fileName, articleName) {
-        return this.request('/api/upload-url', {
+        return this.request('/upload-url', {
             method: 'POST',
             body: JSON.stringify({ fileName, articleName })
         });
@@ -37,7 +37,7 @@ class ApiConfig {
 
     // フォルダ作成
     async createFolder(articleName) {
-        return this.request('/api/create-folder', {
+        return this.request('/create-folder', {
             method: 'POST',
             body: JSON.stringify({ articleName })
         });
@@ -45,7 +45,7 @@ class ApiConfig {
 
     // 記事保存
     async saveArticle(content, articleName) {
-        return this.request('/api/articles', {
+        return this.request('/articles', {
             method: 'POST',
             body: JSON.stringify({ content, articleName })
         });
