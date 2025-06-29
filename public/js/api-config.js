@@ -2,7 +2,7 @@
 class ApiConfig {
     constructor() {
         // API Gateway エンドポイント
-        this.baseUrl = 'https://ozogkwy76d.execute-api.ap-northeast-1.amazonaws.com/prod';
+        this.baseUrl = 'https://91j2anhglf.execute-api.ap-northeast-1.amazonaws.com/prod';
     }
 
     async request(endpoint, options = {}) {
