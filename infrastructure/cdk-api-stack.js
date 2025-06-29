@@ -52,17 +52,34 @@ class BlogApiStack extends Stack {
             if (httpMethod === 'POST' && event.resource === '/create-folder') {
               const { articleName } = requestBody;
               
-              await s3.putObject({
-                Bucket: BUCKET_NAME,
-                Key: \`articles/\${articleName}/\`,
-                Body: ''
-              }).promise();
+              console.log('Creating folder for:', articleName);
+              console.log('Bucket:', BUCKET_NAME);
               
-              return {
-                statusCode: 200,
-                headers,
-                body: JSON.stringify({ success: true, folder: articleName })
-              };
+              try {
+                await s3.putObject({
+                  Bucket: BUCKET_NAME,
+                  Key: \`articles/\${articleName}/\`,
+                  Body: ''
+                }).promise();
+                
+                console.log('Folder created successfully');
+                return {
+                  statusCode: 200,
+                  headers,
+                  body: JSON.stringify({ success: true, folder: articleName })
+                };
+              } catch (s3Error) {
+                console.error('S3 Error:', s3Error);
+                return {
+                  statusCode: 500,
+                  headers,
+                  body: JSON.stringify({ 
+                    error: 'S3 operation failed', 
+                    details: s3Error.message,
+                    bucket: BUCKET_NAME
+                  })
+                };
+              }
             }
 
             if (httpMethod === 'POST' && event.resource === '/articles') {
@@ -102,8 +119,16 @@ class BlogApiStack extends Stack {
     // S3アクセス権限追加
     blogApiFunction.addToRolePolicy(new PolicyStatement({
       effect: Effect.ALLOW,
-      actions: ['s3:PutObject', 's3:GetObject'],
-      resources: ['arn:aws:s3:::ai-blog-images-992382791277/*']
+      actions: [
+        's3:PutObject', 
+        's3:GetObject', 
+        's3:ListBucket',
+        's3:GetBucketLocation'
+      ],
+      resources: [
+        'arn:aws:s3:::ai-blog-images-992382791277',
+        'arn:aws:s3:::ai-blog-images-992382791277/*'
+      ]
     }));
 
     // API Gateway作成
