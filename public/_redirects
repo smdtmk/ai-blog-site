@@ -1,11 +1,4 @@
-# Force exact file matches
-/admin.html /admin.html 200!
-/contact.html /contact.html 200!
+# Static files only
+/admin.html /admin.html 200
+/contact.html /contact.html 200
 / /index.html 200
-
-# Redirect admin directory to admin.html
-/admin /admin.html 301!
-/admin/ /admin.html 301!
-
-# Fallback
-/* /index.html 200
