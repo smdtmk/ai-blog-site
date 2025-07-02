@@ -51,6 +51,13 @@ class ApiConfig {
         });
     }
 
+    // 記事一覧取得
+    async getArticles() {
+        return this.request('/articles', {
+            method: 'GET'
+        });
+    }
+
     // S3に直接アップロード
     async uploadToS3(uploadUrl, file) {
         console.log('Uploading to S3:', {
