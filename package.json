@@ -29,6 +29,7 @@
     "url": "https://github.com/smdtmk/ai-blog-site/issues"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.840.0",
     "aws-cdk": "^2.1019.2",
     "aws-cdk-lib": "^2.202.0",
     "constructs": "^10.4.2"

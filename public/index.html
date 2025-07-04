@@ -33,41 +33,9 @@
 
         <!-- 記事一覧 -->
         <section class="articles" id="articles">
-            <article class="article-card">
-                <div class="article-image">画像プレースホルダー</div>
-                <div class="article-content">
-                    <h2 class="article-title">ChatGPTの活用方法：業務効率化のための実践ガイド</h2>
-                    <p class="article-excerpt">ChatGPTを使って日常業務を効率化する具体的な方法を紹介。プロンプトエンジニアリングの基本から応用まで...</p>
-                    <div class="article-meta">
-                        <span>2024年12月15日</span>
-                        <a href="#" class="read-more">続きを読む</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="article-card">
-                <div class="article-image">画像プレースホルダー</div>
-                <div class="article-content">
-                    <h2 class="article-title">機械学習入門：初心者でも分かるアルゴリズムの基礎</h2>
-                    <p class="article-excerpt">機械学習の基本概念から実装まで、初心者向けに分かりやすく解説。Pythonを使った実践例も含めて...</p>
-                    <div class="article-meta">
-                        <span>2024年12月12日</span>
-                        <a href="#" class="read-more">続きを読む</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="article-card">
-                <div class="article-image">画像プレースホルダー</div>
-                <div class="article-content">
-                    <h2 class="article-title">AWS Amplifyで始めるサーバーレス開発</h2>
-                    <p class="article-excerpt">AWS Amplifyを使ったモダンなWebアプリケーション開発の手法を解説。インフラエンジニア向けの実践的な内容...</p>
-                    <div class="article-meta">
-                        <span>2024年12月10日</span>
-                        <a href="#" class="read-more">続きを読む</a>
-                    </div>
-                </div>
-            </article>
+            <div class="articles-grid">
+                <p class="loading">記事を読み込み中...</p>
+            </div>
         </section>
 
         <!-- サイドバー -->
@@ -109,7 +77,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/js/api-config.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/articles-loader.js"></script>
+    <script src="/js/debug-articles.js"></script>
 </body>
 </html>
