@@ -32,7 +32,7 @@ class ArticlesLoader {
                     <p class="article-excerpt">${article.excerpt}</p>
                     <div class="article-meta">
                         <time class="article-date">${article.date}</time>
-                        <a href="#" class="read-more" onclick="showArticleModal('${article.slug}')">続きを読む</a>
+                        <a href="#" class="read-more" onclick="showArticlePage('${article.slug}')">続きを読む</a>
                     </div>
                     <div class="article-topics">
                         ${article.topics.map(topic => `<span class="topic-tag">${topic}</span>`).join('')}
@@ -51,7 +51,7 @@ class ArticlesLoader {
         container.innerHTML = '<p class="error-message">記事の読み込みに失敗しました。</p>';
     }
 
-    async showArticleDetail(slug) {
+    async showArticlePage(slug) {
         try {
             const response = await apiConfig.getArticles();
             const articles = response.articles || [];
@@ -62,31 +62,67 @@ class ArticlesLoader {
                 return;
             }
 
-            // モーダルを作成
-            const modal = document.createElement('div');
-            modal.className = 'article-modal';
-            modal.innerHTML = `
-                <div class="modal-overlay" onclick="closeArticleModal()"></div>
-                <div class="modal-content">
-                    <button class="modal-close" onclick="closeArticleModal()">&times;</button>
-                    <div class="article-header">
-                        <div class="article-emoji-large">${article.emoji}</div>
-                        <h1 class="article-title">${article.title}</h1>
-                        <div class="article-meta">
-                            <time>${article.date}</time>
-                            <div class="article-topics">
-                                ${article.topics.map(topic => `<span class="topic-tag">${topic}</span>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="article-body">
-                        ${marked.parse(article.excerpt.replace('...', '') + '\n\n' + 'この記事の全文を読むには、管理者にお問い合わせください。')}
+            // 新しいページを動的に生成
+            const articleHtml = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${article.title} - AI Blog Site</title>
+    <meta name="description" content="${article.excerpt}">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/article.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">AI Blog Site</a>
+            <nav class="nav">
+                <ul>
+                    <li><a href="/">ホーム</a></li>
+                    <li><a href="/contact.html">お問い合わせ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article-main">
+        <article class="article-container">
+            <header class="article-header">
+                <div class="article-emoji-large">${article.emoji}</div>
+                <h1 class="article-title">${article.title}</h1>
+                <div class="article-meta">
+                    <time datetime="${article.date}">${article.date}</time>
+                    <div class="article-topics">
+                        ${article.topics.map(topic => `<span class="topic-tag">${topic}</span>`).join('')}
                     </div>
                 </div>
+            </header>
+            
+            <div class="article-content">
+                ${marked.parse(article.excerpt.replace('...', '') + '\n\nこの記事の全文を読むには、管理者にお問い合わせください。')}
+            </div>
+            
+            <footer class="article-footer">
+                <a href="/" class="back-link">← 記事一覧に戻る</a>
+            </footer>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 AI Blog Site. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
             `;
             
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
+            // 新しいウィンドウで開くのではなく、現在のページを置き換え
+            document.open();
+            document.write(articleHtml);
+            document.close();
             
         } catch (error) {
             console.error('記事詳細の読み込みに失敗:', error);
@@ -97,17 +133,9 @@ class ArticlesLoader {
 
 // グローバル関数
 let articlesLoader;
-function showArticleModal(slug) {
+function showArticlePage(slug) {
     if (articlesLoader) {
-        articlesLoader.showArticleDetail(slug);
-    }
-}
-
-function closeArticleModal() {
-    const modal = document.querySelector('.article-modal');
-    if (modal) {
-        modal.remove();
-        document.body.style.overflow = 'auto';
+        articlesLoader.showArticlePage(slug);
     }
 }
 
